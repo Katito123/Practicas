@@ -1,0 +1,165 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace threads2
+{
+    internal class Program
+    {
+        // Declarar un objeto Mutex para proteger las secciones críticas del código
+        static Mutex mutex = new Mutex();
+
+        static void Main(string[] args)
+        {
+            // Crear e iniciar hilos para los autos A, B, C y D
+            Thread autoAHilo = new Thread(AutoA);
+            Thread autoBHilo = new Thread(AutoB);
+            Thread autoCHilo = new Thread(AutoC);
+            Thread autoDHilo = new Thread(AutoD);
+
+            autoAHilo.Start();
+            autoBHilo.Start();
+            autoCHilo.Start();
+            autoDHilo.Start();
+        }
+
+        static void AutoA()
+        {
+            // Posición inicial del auto A
+            int posicionA = 0;
+
+            // Bucle para mover el auto A
+            while (posicionA < Console.WindowWidth - 1)
+            {
+                // Adquirir el mutex antes de acceder a la sección crítica
+                mutex.WaitOne();
+                try
+                {
+                    // Limpiar la posición anterior del auto A
+                    Console.SetCursorPosition(posicionA, 0);
+                    Console.Write(' ');
+
+                    // Mover el auto A una posición hacia la derecha
+                    posicionA++;
+                    Console.SetCursorPosition(posicionA, 0);
+                    Console.Write('A');
+                }
+
+                finally
+                {
+                    // Liberar el mutex después de completar la operación en la sección crítica
+                    mutex.ReleaseMutex();
+                }
+
+                // Esperar un tiempo aleatorio entre 100 y 300 milisegundos antes de la próxima actualización
+                Random rnd = new Random();
+                Thread.Sleep(rnd.Next(100, 301));
+            }
+        }
+
+        static void AutoB()
+        {
+            // Posición inicial del auto B
+            int posicionB = 0;
+
+            // Bucle para mover el auto B
+            while (posicionB < Console.WindowWidth - 1)
+            {
+                // Adquirir el mutex antes de acceder a la sección crítica
+                mutex.WaitOne();
+                try
+                {
+                    // Limpiar la posición anterior del auto B
+                    Console.SetCursorPosition(posicionB, 1);
+                    Console.Write(' ');
+
+                    // Mover el auto B una posición hacia la derecha
+                    posicionB++;
+                    Console.SetCursorPosition(posicionB, 1);
+                    Console.Write('B');
+                }
+
+                finally
+                {
+                    // Liberar el mutex después de completar la operación en la sección crítica
+                    mutex.ReleaseMutex();
+                }
+
+                // Esperar un tiempo aleatorio entre 100 y 300 milisegundos antes de la próxima actualización
+                Random rnd = new Random();
+                Thread.Sleep(rnd.Next(100, 301));
+            }
+        }
+
+        static void AutoC()
+        {
+            // Posición inicial del auto C
+            int posicionC = 0;
+
+            // Bucle para mover el auto C
+            while (posicionC < Console.WindowWidth - 1)
+            {
+                // Adquirir el mutex antes de acceder a la sección crítica
+                mutex.WaitOne();
+                try
+                {
+                    // Limpiar la posición anterior del auto C
+                    Console.SetCursorPosition(posicionC, 2);
+                    Console.Write(' ');
+
+                    // Mover el auto C una posición hacia la derecha
+                    posicionC++;
+                    Console.SetCursorPosition(posicionC, 2);
+                    Console.Write('C');
+                }
+
+                finally
+                {
+                    // Liberar el mutex después de completar la operación en la sección crítica
+                    mutex.ReleaseMutex();
+                }
+
+                // Esperar un tiempo aleatorio entre 100 y 300 milisegundos antes de la próxima actualización
+                Random rnd = new Random();
+                Thread.Sleep(rnd.Next(100, 301));
+            }
+        }
+
+        static void AutoD()
+        {
+            // Posición inicial del auto D
+            int posicionD = 0;
+
+            // Bucle para mover el auto D
+            while (posicionD < Console.WindowWidth - 1)
+            {
+                // Adquirir el mutex antes de acceder a la sección crítica
+                mutex.WaitOne();
+                try
+                {
+                    // Limpiar la posición anterior del auto D
+                    Console.SetCursorPosition(posicionD, 3);
+                    Console.Write(' ');
+
+                    // Mover el auto D una posición hacia la derecha
+                    posicionD++;
+                    Console.SetCursorPosition(posicionD, 3);
+                    Console.Write('D');
+                }
+
+                finally
+                {
+                    // Liberar el mutex después de completar la operación en la sección crítica
+                    mutex.ReleaseMutex();
+                }
+
+                // Esperar un tiempo aleatorio entre 100 y 300 milisegundos antes de la próxima actualización
+                Random rnd = new Random();
+                Thread.Sleep(rnd.Next(100, 301));
+            }
+        }        
+    }
+}
