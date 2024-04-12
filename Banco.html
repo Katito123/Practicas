@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Threads3
+{
+    class Cuenta
+    {
+        private int saldo;
+        private Mutex mutex = new Mutex(); // Mutex para control de concurrencia
+
+        public Cuenta(int saldoInicial) // El constructor Cuenta inicializa el saldo inicial de la cuenta.
+        {
+            saldo = saldoInicial;
+        }
+                        
+        public void Depositar(int cantidad, string nombreUsuario)
+        {
+            mutex.WaitOne(); // Espera para obtener el mutex
+            saldo += cantidad;
+            Console.WriteLine($"[{nombreUsuario}] depositó {cantidad} unidades. Saldo actual: {saldo}");
+            mutex.ReleaseMutex(); // Libera el mutex después de terminar
+        }
+
+        public void Retirar(int cantidad, string nombreUsuario)
+        {
+            mutex.WaitOne(); // Espera para obtener el mutex
+            if (saldo >= cantidad)
+            {
+                saldo -= cantidad;
+                Console.WriteLine($"[{nombreUsuario}] retiró {cantidad} unidades. Saldo actual: {saldo}");
+            }
+            else
+            {
+                Console.WriteLine($"No se puede retirar {cantidad} unidades. Saldo insuficiente.");
+            }
+            mutex.ReleaseMutex(); // Libera el mutex después de terminar
+        }
+    }
+
+    class Usuario
+    {
+        private Cuenta cuenta;
+        private string nombre;
+        private Random random = new Random();
+
+        public Usuario(Cuenta cuenta, string nombre)
+        {
+            this.cuenta = cuenta;
+            this.nombre = nombre;
+        }
+
+        public void RealizarOperaciones()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                int opcion = random.Next(2); // 0 para depositar, 1 para retirar
+                int cantidad = random.Next(100) + 1; // Monto aleatorio entre 1 y 100
+
+                if (opcion == 0)
+                {
+                    cuenta.Depositar(cantidad, nombre);
+                }
+                else
+                {
+                    cuenta.Retirar(cantidad, nombre);
+                }
+
+                Thread.Sleep(1000); // Espera de 1 segundo entre operaciones
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Cuenta cuenta = new Cuenta(500); // Saldo inicial de la cuenta: 500 unidades
+
+            Usuario usuario1 = new Usuario(cuenta, "Usuario 1");
+            Usuario usuario2 = new Usuario(cuenta, "Usuario 2");
+
+            Task.Run(() => usuario1.RealizarOperaciones()); // Ejecutar las operaciones del usuario 1 en un hilo separado
+            Task.Run(() => usuario2.RealizarOperaciones()); // Ejecutar las operaciones del usuario 2 en un hilo separado
+
+            Console.ReadLine(); // Esperar a que finalicen las operaciones antes de cerrar la consola
+        }
+    }
+}
+
+</body>
+</html>
